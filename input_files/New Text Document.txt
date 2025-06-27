@@ -1,0 +1,2 @@
+This is a test document.
+It describes how bronze enrollment works in the POS system.

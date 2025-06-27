@@ -1,0 +1,13 @@
+# Virtual environment
+venv/
+__pycache__/
+*.pyc
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Large binaries
+*.dll
+*.lib
+*.pyd
