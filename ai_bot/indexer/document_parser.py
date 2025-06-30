@@ -3,6 +3,7 @@ import pytesseract
 from PIL import Image
 import fitz  # PyMuPDF
 import docx
+from ai_bot.indexer.flow_parser import detect_shapes_and_arrows
 
 def parse_file(file_path):
     ext = os.path.splitext(file_path)[-1].lower()
@@ -31,9 +32,15 @@ def parse_docx(file_path):
     return split_chunks(text)
 
 def parse_image(file_path):
-    image = Image.open(file_path)
-    text = pytesseract.image_to_string(image)
-    return split_chunks(text)
+    shapes = detect_shapes_and_arrows(file_path)
+    if not shapes:
+        return ["No flow detected."]
+    
+    steps = []
+    for shape in shapes:
+        steps.append(f"{shape['type'].capitalize()}: {shape['text']}")
+
+    return split_chunks("\n".join(steps))
 
 def parse_text(file_path):
     with open(file_path, "r", encoding="utf-8", errors="ignore") as f:

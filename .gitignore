@@ -11,3 +11,5 @@ Thumbs.db
 *.dll
 *.lib
 *.pyd
+*.bin
+*.pkl

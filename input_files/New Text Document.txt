@@ -1,2 +1,4 @@
 This is a test document.
 It describes how bronze enrollment works in the POS system.
+
+Bronze enrollment is a macys product where a user is added using phone number and email

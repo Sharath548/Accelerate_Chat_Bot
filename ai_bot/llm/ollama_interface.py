@@ -1,33 +1,45 @@
-import subprocess
-import json
+from ollama import Client
 
-OLLAMA_MODEL = "mistral"  # You can change to llama3, gemma, etc.
+OLLAMA_MODEL = "phi3"  # You can change this to 'llama3', 'mistral', etc.
 
-def ask_ollama(question, context):
-    # Build the full prompt
-    full_prompt = f"""You are an AI assistant.
-Use the following context to answer the question.
+client = Client(host='http://localhost:11434')  # Default Ollama server
+
+def ask_ollama(question, context, chat_history=None):
+    try:
+        # System prompt for behavior
+        system_msg = {
+            "role": "system",
+            "content": "You are a helpful AI assistant that answers user questions based on provided document context and prior conversation."
+        }
+
+        # Start building the message thread
+        messages = [system_msg]
+
+        # Include prior conversation history if available
+        if chat_history:
+            messages.extend(chat_history)
+
+        # Add the current user question with context
+        user_msg = {
+            "role": "user",
+            "content": f"""Use the following context to answer the question.
 
 Context:
 {context}
 
 Question:
 {question}
+"""
+        }
+        messages.append(user_msg)
 
-Answer:"""
-
-    try:
-        # Use subprocess to call ollama
-        result = subprocess.run(
-            ["ollama", "run", OLLAMA_MODEL],
-            input=full_prompt.encode("utf-8"),
-            capture_output=True,
-            timeout=200
+        # Send to Ollama
+        response = client.chat(
+            model=OLLAMA_MODEL,
+            messages=messages
         )
-        output = result.stdout.decode("utf-8").strip()
-        return output
 
-    except subprocess.TimeoutExpired:
-        return "⚠️ Ollama timed out."
+        return response['message']['content'].strip()
+
     except Exception as e:
         return f"❌ Error talking to Ollama: {e}"
